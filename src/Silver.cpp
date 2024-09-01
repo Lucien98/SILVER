@@ -649,15 +649,22 @@ Silver::check_PINI(Circuit &model, std::map<int, Probes> inputs, const int probi
 
             if (robustModel) {
                 Bdd observation = model[probes[0]].getRegisters();
-                for (int probe = 1; probe < probes.size(); probe++)
+                printf("%d: \n", probes[0]);
+                for (int probe = 1; probe < probes.size(); probe++){
                     observation &= model[probes[probe]].getRegisters();
+                }
 
                 std::vector<uint32_t> extended = BddSet(observation).toVector();
-
+                for (int i = 0; i < extended.size(); ++i)
+                {
+                    printf("%d, ", extended[i]);
+                }
+                printf("\n");
                 for (int comb = 1; comb < (1 << extended.size()); comb++) {
                     observation = sylvan::sylvan_true;
-                    for (int elem = 0; elem < extended.size(); elem++)
+                    for (int elem = 0; elem < extended.size(); elem++){
                         if (comb & (1 << elem)) observation &= model[extended[elem]].getFunction();
+                    }
 
                     std::vector<std::vector<Node>> shares(inputs.size());
                     std::vector<uint32_t> variables = BddSet(observation.Support()).toVector();
